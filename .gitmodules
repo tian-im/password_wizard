@@ -1,0 +1,9 @@
+[submodule "vendor/jasmine-jquery"]
+	path = vendor/jasmine-jquery
+	url = git://github.com/velesin/jasmine-jquery.git
+[submodule "vendor/jasmine"]
+	path = vendor/jasmine
+	url = git://github.com/pivotal/jasmine.git
+[submodule "vendor/bootstrap"]
+	path = vendor/bootstrap
+	url = git://github.com/twitter/bootstrap.git
