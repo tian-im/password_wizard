@@ -1,0 +1,4 @@
+auto: true
+baseurl: /password_wizard
+server: true
+server_port: 3000

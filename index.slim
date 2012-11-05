@@ -1,0 +1,123 @@
+- # helpers
+- css = lambda do |css_url|
+  link type='text/css' rel='stylesheet' href=css_url
+- js = lambda do |js_url|
+  script type='text/javascript' src=js_url
+- codes = lambda do |lines_of_code, lang = 'lang-html'|
+  pre class="prettyprint linenums #{ lang }"
+    #{ lines_of_code.gsub(/</, '&lt;').gsub(/>/, '&gt;') }
+doctype 5
+html
+  head
+    title Password Wizard
+    - css.call 'vendor/bootstrap/docs/assets/css/bootstrap-responsive.css'
+    - css.call 'vendor/bootstrap/docs/assets/css/bootstrap.css'
+    - css.call 'vendor/bootstrap/docs/assets/css/docs.css'
+    - css.call 'vendor/bootstrap/docs/assets/js/google-code-prettify/prettify.css'
+    - css.call 'examples/demo.css'
+    - js.call 'examples/google_analytics.js'
+    - js.call 'vendor/jquery-1.7.2.js'
+    - js.call 'vendor/bootstrap/docs/assets/js/bootstrap.js'
+    - js.call 'vendor/prettify.js'
+    - js.call 'lib/jquery.password_wizard.js'
+    - js.call 'examples/demo.js'
+
+  body data-spy='scroll' data-target='div.subnav' data-offset=70
+    .navbar.navbar-fixed-top.navbar-inverse
+      .navbar-inner
+        .container
+          .nav-collapse
+            ul.nav
+              li.active
+                a Overview
+              li.divider-vertical
+              li
+                a href='https://github.com/chentianwen/password_wizard/issues' target='_blank' Issues &amp; Feedbacks
+    header.jumbotron.subhead#overview
+      .container
+        h1.title
+    .container
+      .page-header
+      .row
+        .span3.column
+          h3 About
+          p Online Password Generation Tool
+          h3 Jasmine Test
+          #jasmine-build-status
+          p
+            a href='SpecRunner.html' target='_blank' Click to open the test page.
+        .span9.column
+          section#demo
+            .bs-docs-example
+              form
+                .span4
+                  .candidates
+                    label
+                      input type='checkbox' id='digits_candidates'
+                      ' Digits: 0 - 9
+                    label
+                      input type='checkbox' id='alphabets_candidates'
+                      ' Alphabets: a - z
+                    label
+                      input type='checkbox' id='case_insensitive_candidates'
+                      ' Include 
+                    label
+                      input type='checkbox' id='symbols_candidates'
+                      ' Symbols: ~ ! @ # $ % ^ &amp; * ( ) _ + ` { } | [ ] \ : " ; ' &lt; &gt; ? , . /
+                  .length
+                    label
+                      ' Password length:
+                      input type='text' id='password_length'
+                .span4
+                  .criterias
+                    label
+                      ' More than 
+                      input type='text' id='digits_length'
+                      ' digits
+                    label
+                      ' More than 
+                      input type='text' id='alphabets_length'
+                      ' alphabets
+                    label
+                      ' More than 
+                      input type='text' id='symbols_length'
+                      ' symbols
+                .span4
+                  .submit
+                    input type='button' value='Generate'
+            .well.row
+              #result
+                h4 Test
+          section#whatsnew
+            h2 What's New
+            p
+              em 0.0.1
+              ' - First implementation
+    .footer
+      .container
+        p
+          ' Licensed under the
+          a herf='http://www.opensource.org/licenses/MIT' MIT License
+        p
+          ' Powered by the following technologies:
+        .row
+          .span3
+            h4 Scripting:
+            a herf='http://jashkenas.github.com/coffee-script/' target='_blank' coffee-script
+          .span3
+            h4 Test:
+            a herf='http://pivotal.github.com/jasmine/' target='_blank' jasmine
+          .span3
+            h4 Design:
+            a herf='http://twitter.github.com/bootstrap/' target='_blank' bootstrap
+          .span3
+            h4 Others:
+            a herf='https://github.com/guard/guard/' target='_blank' guard
+            ',
+            a herf='https://github.com/stonean/slim/' target='_blank' slim
+            ',
+            a herf='http://compass-style.org/' target='_blank' compass
+            ',
+            a herf='http://code.google.com/p/google-code-prettify/' target='_blank' google-code-prettify
+
+    iframe id='spec' src='SpecRunner.html' frameborder=0

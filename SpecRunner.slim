@@ -1,0 +1,23 @@
+- # helpers
+- css = lambda do |css_url|
+  link type='text/css' rel='stylesheet' href=css_url
+- js = lambda do |js_url|
+  script type='text/javascript' src=js_url
+doctype 5
+html
+  head
+    title Jasmine Spec Runner
+    link href='vendor/jasmine/images/jasmine_favicon.png' rel='shortcut icon' type='image/png'
+    - css.call 'vendor/jasmine/lib/jasmine-core/jasmine.css'
+    - js.call 'vendor/jasmine/lib/jasmine-core/jasmine.js'
+    - js.call 'vendor/jasmine/lib/jasmine-core/jasmine-html.js'
+    
+    - js.call 'vendor/jquery-1.7.2.js'
+    - js.call 'vendor/jasmine-jquery/lib/jasmine-jquery.js'
+    / include source files here...
+    - js.call 'lib/jquery.password_wizard.js'
+    
+    / include spec files here...
+    - js.call 'spec/javascripts/jquery.password_wizard_spec.js'
+    - js.call 'spec/SpecHelper.js'
+  body

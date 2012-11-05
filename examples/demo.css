@@ -1,0 +1,39 @@
+/* line 1, demo.scss */
+body {
+  background-color: white;
+}
+
+/* line 5, demo.scss */
+iframe {
+  display: none;
+}
+
+/* line 9, demo.scss */
+#jasmine-build-status {
+  padding-bottom: 13px;
+}
+/* line 11, demo.scss */
+#jasmine-build-status.failed {
+  background: url("failing.png") no-repeat top left;
+}
+/* line 14, demo.scss */
+#jasmine-build-status.passed {
+  background: url("passing.png") no-repeat top left;
+}
+
+/* line 20, demo.scss */
+.bs-docs-example:after {
+  content: "Options";
+  clear: both;
+}
+/* line 25, demo.scss */
+.bs-docs-example form:after {
+  clear: both;
+}
+
+/* line 30, demo.scss */
+.footer {
+  margin-top: 45px;
+  padding: 35px 0 36px;
+  border-top: 1px solid #E5E5E5;
+}
