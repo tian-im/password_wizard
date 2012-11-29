@@ -9,6 +9,7 @@
 doctype 5
 html
   head
+    meta http-equiv='x-dns-prefetch-control' content='off'
     title Password Wizard
     - css.call 'vendor/bootstrap/docs/assets/css/bootstrap-responsive.css'
     - css.call 'vendor/bootstrap/docs/assets/css/bootstrap.css'
@@ -22,7 +23,7 @@ html
     - js.call 'lib/jquery.password_wizard.js'
     - js.call 'examples/demo.js'
 
-  body data-spy='scroll' data-target='div.subnav' data-offset=70
+  body data-spy='scroll' data-target='div.subnav'
     .navbar.navbar-fixed-top.navbar-inverse
       .navbar-inner
         .container
@@ -37,57 +38,84 @@ html
       .container
         h1.title
     .container
-      .page-header
       .row
         .span3.column
           h3 About
-          p Online Password Generation Tool
+          p Online Password Generator
           h3 Jasmine Test
           #jasmine-build-status
           p
             a href='SpecRunner.html' target='_blank' Click to open the test page.
         .span9.column
           section#demo
-            .bs-docs-example
-              form
-                .span4
-                  .candidates
-                    label
-                      input type='checkbox' id='digits_candidates'
-                      ' Digits: 0 - 9
-                    label
-                      input type='checkbox' id='alphabets_candidates'
-                      ' Alphabets: a - z
-                    label
-                      input type='checkbox' id='case_insensitive_candidates'
-                      ' Include 
-                    label
-                      input type='checkbox' id='symbols_candidates'
-                      ' Symbols: ~ ! @ # $ % ^ &amp; * ( ) _ + ` { } | [ ] \ : " ; ' &lt; &gt; ? , . /
-                  .length
-                    label
-                      ' Password length:
-                      input type='text' id='password_length'
-                .span4
-                  .criterias
-                    label
-                      ' More than 
-                      input type='text' id='digits_length'
-                      ' digits
-                    label
-                      ' More than 
-                      input type='text' id='alphabets_length'
-                      ' alphabets
-                    label
-                      ' More than 
-                      input type='text' id='symbols_length'
-                      ' symbols
-                .span4
-                  .submit
-                    input type='button' value='Generate'
-            .well.row
-              #result
-                h4 Test
+            .span4
+              #purpose.bs-docs-example.primary
+                label.radio
+                  input#general type='radio' name='purpose' data-trigger='wizard'
+                  ' General
+                label.radio
+                  input#four_digits_pin type='radio' name='purpose' data-trigger='wizard'
+                  ' 4 Digits PIN
+                  span.help-block ( eg. 1024 )
+                label.radio
+                  input#three_dices type='radio' name='purpose' data-trigger='wizard'
+                  ' Three Dices
+                label.radio
+                  input#hex_color type='radio' name='purpose' data-trigger='wizard'
+                  ' HEX Color
+            .span4
+              #options.bs-docs-example.primary
+                label.edit
+                  ' Password Length:
+                  input#password_length.short type='text' data-trigger='wizard'
+                label.edit
+                  ' Password Samples:
+                  input#password_samples.short type='text' data-trigger='wizard'
+          section#buttons
+            .span8
+              button.btn.btn-success
+                ' Generate
+          section#output
+            .span8
+              #result.bs-docs-example.primary
+          section#more_options
+            .span4
+              #characters.bs-docs-example
+                label
+                  ' Characters
+                input#custom type='text' data-trigger='wizard'
+                label.checkbox
+                  input#digits type='checkbox' data-trigger='wizard'
+                  ' Include Digits
+                  span.help-block ( e.g. 0 - 9 )
+                label.checkbox
+                  input#letters type='checkbox' data-trigger='wizard'
+                  ' Include Letters
+                  span.help-block ( e.g. a - z )
+                label.checkbox
+                  input#uppercase_letters type='checkbox' data-trigger='wizard'
+                  ' Include Uppercase Letters
+                  span.help-block ( e.g. A - Z )
+                label.checkbox
+                  input#symbols type='checkbox' data-trigger='wizard'
+                  ' Include Symbols
+                  span.help-block ( e.g.  )
+                label.checkbox
+                  input#type_safe type='checkbox' data-trigger='wizard'
+                  ' No Similar Characters
+                  span.help-block ( e.g. i, I, l, 1, |, o, O, 0 )
+            .span4
+              #criteria.bs-docs-example
+                label.edit
+                  ' Mininum length of digits: 
+                  input#digits_checker_length.short type='text' data-trigger='wizard'
+                label.edit
+                  ' Mininum length of letters: 
+                  input#letters_checker_length.short type='text' data-trigger='wizard'
+                label.edit
+                  ' Mininum length of symbols: 
+                  input#symbols_checker_length.short type='text' data-trigger='wizard'
+            .clear
           section#whatsnew
             h2 What's New
             p
@@ -117,7 +145,5 @@ html
             a herf='https://github.com/stonean/slim/' target='_blank' slim
             ',
             a herf='http://compass-style.org/' target='_blank' compass
-            ',
-            a herf='http://code.google.com/p/google-code-prettify/' target='_blank' google-code-prettify
 
-    iframe id='spec' src='SpecRunner.html' frameborder=0
+    iframe#spec src='SpecRunner.html' frameborder=0

@@ -16,15 +16,61 @@ iframe {
   }
 }
 
-.bs-docs-example {
-  &:after {
-    content: "Options";
-    clear: both;
-  }
+.clear {
+  clear: both;
+}
 
-  form:after {
-    clear: both;
+.edit {
+  line-height: 30px;
+  input {
+    float: right;
+    margin-bottom: 0px;
   }
+}
+input.short {
+  width: 18px;
+  margin-right: 5px;
+}
+.help-block {
+  color: #999999;
+  display: inline;
+}
+
+.bs-docs-example {
+  &#purpose, &#options {
+    min-height: 110px;
+  }
+  margin-right: 10px;
+  &.primary:after {
+    color: white;
+    background-color: #2F96B4;
+  }
+  &#purpose:after {
+    content: "Purpose";
+  }
+  &#options:after {
+    content: "Options";
+  }
+  &#characters:after {
+    content: "Characters";
+  }
+  &#criteria:after {
+    content: "Criteria";
+  }
+  &#result:after {
+    content: "Result";
+  }
+}
+
+#result .sample {
+  display: inline-block;
+  min-width: 138px;
+  margin: 5px 10px;
+  padding: 3px 15px;
+  font-family: Monaco;
+  background-color: #fff;
+  border: 1px dashed #000;
+  text-align: center;
 }
 
 .footer {

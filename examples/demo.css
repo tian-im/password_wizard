@@ -21,17 +21,80 @@ iframe {
   background: url("passing.png") no-repeat top left;
 }
 
-/* line 20, demo.scss */
-.bs-docs-example:after {
-  content: "Options";
-  clear: both;
-}
-/* line 25, demo.scss */
-.bs-docs-example form:after {
+/* line 19, demo.scss */
+.clear {
   clear: both;
 }
 
+/* line 23, demo.scss */
+.edit {
+  line-height: 30px;
+}
+/* line 25, demo.scss */
+.edit input {
+  float: right;
+  margin-bottom: 0px;
+}
+
 /* line 30, demo.scss */
+input.short {
+  width: 18px;
+  margin-right: 5px;
+}
+
+/* line 34, demo.scss */
+.help-block {
+  color: #999999;
+  display: inline;
+}
+
+/* line 39, demo.scss */
+.bs-docs-example {
+  margin-right: 10px;
+}
+/* line 40, demo.scss */
+.bs-docs-example#purpose, .bs-docs-example#options {
+  min-height: 110px;
+}
+/* line 44, demo.scss */
+.bs-docs-example.primary:after {
+  color: white;
+  background-color: #2F96B4;
+}
+/* line 48, demo.scss */
+.bs-docs-example#purpose:after {
+  content: "Purpose";
+}
+/* line 51, demo.scss */
+.bs-docs-example#options:after {
+  content: "Options";
+}
+/* line 54, demo.scss */
+.bs-docs-example#characters:after {
+  content: "Characters";
+}
+/* line 57, demo.scss */
+.bs-docs-example#criteria:after {
+  content: "Criteria";
+}
+/* line 60, demo.scss */
+.bs-docs-example#result:after {
+  content: "Result";
+}
+
+/* line 65, demo.scss */
+#result .sample {
+  display: inline-block;
+  min-width: 138px;
+  margin: 5px 10px;
+  padding: 3px 15px;
+  font-family: Monaco;
+  background-color: #fff;
+  border: 1px dashed #000;
+  text-align: center;
+}
+
+/* line 76, demo.scss */
 .footer {
   margin-top: 45px;
   padding: 35px 0 36px;
