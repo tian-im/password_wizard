@@ -1,6 +1,5 @@
 var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-30894368-1']);
-_gaq.push(['_setDomainName', 'github.tian.im']);
+_gaq.push(['_setAccount', 'UA-30894368-2']);
 _gaq.push(['_trackPageview']);
 
 (function() {
