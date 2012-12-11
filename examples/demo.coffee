@@ -12,23 +12,11 @@ jQuery ($) ->
       @length = 8
       @samples = 10
 
-    execute: ->
-      pw = new PasswordWizard()
-      pw.length(@length)
-      pw.candidates = @candidates
-
-      pw.add_rule DigitsFrequencyChecker,    @digits_checker_length if @digits_checker_length?
-      pw.add_rule AlphabetsFrequencyChecker, @letters_checker_length if @letters_checker_length?
-      pw.add_rule SymbolsFrequencyChecker,   @symbols_checker_length if @symbols_checker_length?
-
-      pw.generate() for len in [ 1..@samples ]
-
     set: (property, value) ->
       switch property
-        when 'type_safe' then value = value == 'true'
+        when 'type_safe' then value = value.match(/true|t/i)?
         when 'digits_checker_length', 'letters_checker_length', 'symbols_checker_length', 'length', 'samples'
-          if value == ''
-            value = undefined
+          value = undefined if value == ''
       if property == 'candidates'
         @candidates = value
       else
@@ -39,6 +27,17 @@ jQuery ($) ->
       for property in [ 'candidates', 'type_safe', 'digits_checker_length', 'letters_checker_length', 'symbols_checker_length', 'length' ]
         return false unless eval "other.#{ property } == this.#{ property }"
       true
+
+    execute: ->
+      pw = new PasswordWizard()
+      pw.length(@length)
+      pw.candidates = @candidates
+
+      pw.add_rule DigitsFrequencyChecker,    @digits_checker_length  if @digits_checker_length?
+      pw.add_rule AlphabetsFrequencyChecker, @letters_checker_length if @letters_checker_length?
+      pw.add_rule SymbolsFrequencyChecker,   @symbols_checker_length if @symbols_checker_length?
+
+      pw.generate() for len in [ 1..@samples ]
 
   class window.FourDigitsPINStrategy extends PasswordWizardStrategy
     constructor: ->
@@ -78,7 +77,7 @@ jQuery ($) ->
 
     @reload: (strategy) ->
       strategy ?= @strategy()
-      # $('#general').data('strategy', strategy)
+
       $('#custom').val(strategy.candidates)
       $('#digits').prop('checked', @include(strategy.candidates, PasswordWizard.DIGITS))
       $('#letters').prop('checked', @include(strategy.candidates, PasswordWizard.DOWNCASE_ALPHABETS))
@@ -93,11 +92,11 @@ jQuery ($) ->
       $('#password_length').val(strategy.length)
       $('#password_samples').val(strategy.samples)
 
+      # check the checkbox if they share the same configuration
       for item in [ '#four_digits_pin', '#three_dices', '#hex_color' ]
-        if strategy.eq ($item = $(item)).data('strategy')
-          # switch to use same one
-          return $item.prop('checked', true).data('strategy')
-      $('#general').prop('checked', true).data('strategy', strategy)
+        $item = $(item)
+        return $item.prop('checked', true) if strategy.eq $item.data('strategy')
+      $('#general').prop('checked', true)
 
     @update: (property, value) ->
       strategy = @strategy()
@@ -105,19 +104,15 @@ jQuery ($) ->
       @reload(strategy)
 
     @strategy: ->
-      # current
-      strategy = $('input[name=purpose]:checked').data('strategy')
-      strategy ?= $('#general').data('strategy') # default
+      $('#general').data('strategy')
 
     @remove_candidates: (str) ->
-      strategy = @strategy()
-      strategy.candidates = strategy.candidates.replace(new RegExp("[#{ str }]", 'g'), '')
-      @reload(strategy)
+      candidates = $('#custom').val().replace(new RegExp("[#{ str }]", 'g'), '')
+      @update 'candidates', candidates
 
     @add_candidates: (str) ->
-      strategy = @strategy()
-      strategy.candidates = str + strategy.candidates.replace(new RegExp("[#{ str }]", 'g'), '')
-      @reload(strategy)
+      candidates = str + $('#custom').val().replace(new RegExp("[#{ str }]", 'g'), '')
+      @update 'candidates', candidates
 
     @init: ->
       self = @
@@ -140,29 +135,48 @@ jQuery ($) ->
       $('#symbols_checker_length').change ->
         self.update('symbols_checker_length', $(@).val())
 
-      for pairs in [
-        [ '#digits', PasswordWizard.DIGITS ]
-        [ '#letters', PasswordWizard.DOWNCASE_ALPHABETS ]
-        [ '#uppercase_letters', PasswordWizard.UPCASE_ALPHABETS ]
-        [ '#symbols', PasswordWizard.SYMBOLS ]
-      ]
-        $(pairs[0]).change ->
-          if $(@).is(':checked')
-            self.add_candidates(pairs[1])
-          else
-            self.remove_candidates(pairs[1])
+      $('#digits').change ->
+        if $(@).is(':checked')
+          self.add_candidates(PasswordWizard.DIGITS)
+        else
+          self.remove_candidates(PasswordWizard.DIGITS)
 
+      $('#letters').change ->
+        if $(@).is(':checked')
+          self.add_candidates(PasswordWizard.DOWNCASE_ALPHABETS)
+        else
+          self.remove_candidates(PasswordWizard.DOWNCASE_ALPHABETS)
+
+      $('#uppercase_letters').change ->
+        if $(@).is(':checked')
+          self.add_candidates(PasswordWizard.UPCASE_ALPHABETS)
+        else
+          self.remove_candidates(PasswordWizard.UPCASE_ALPHABETS)
+
+      $('#symbols').change ->
+        if $(@).is(':checked')
+          self.add_candidates(PasswordWizard.SYMBOLS)
+        else
+          candidates = PasswordWizard.SYMBOLS.replace(/([\.\[\]\\\(\)\?\$\^\+\*])/g, '\\$1')
+          self.remove_candidates(candidates)
+
+      $('#type_safe').change ->
+        if $(@).is(':checked')
+          candidates = PasswordWizard.TYPE_SAFES.replace(/([\.\[\]\\\(\)\?\$\^\+\*])/g, '\\$1')
+          self.remove_candidates(candidates)
 
       # strategies
-      # $('#general').data 'strategy', new PasswordWizardStrategy()
-      $('#four_digits_pin').data 'strategy', new FourDigitsPINStrategy()
-      $('#three_dices').data 'strategy', new ThreeDicesStrategy()
-      $('#hex_color').data 'strategy', new HEXColorStrategy()
+      $('#four_digits_pin').data('strategy', new FourDigitsPINStrategy())
+      $('#three_dices').data('strategy', new ThreeDicesStrategy())
+      $('#hex_color').data('strategy', new HEXColorStrategy())
 
-      $('#general').change ->
+      $('#four_digits_pin, #three_dices, #hex_color').click ->
+        $('#general').data 'strategy', $.extend({}, $(@).data('strategy'))
+
+      $('#general').click ->
         $(@).data 'strategy', new PasswordWizardStrategy()
 
-      $('input[name=purpose]').change ->
+      $('input[name=purpose]').click ->
         self.reload()
 
       $('button.btn').click -> # generate button

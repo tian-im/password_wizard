@@ -7,10 +7,10 @@ jQuery ($) ->
   # fixtures
   set_fixtures = ->
     f = """
-        #{ set_input 'general',         'radio', 'purpose' }
-        #{ set_input 'four_digits_pin', 'radio', 'purpose' }
-        #{ set_input 'three_dices',     'radio', 'purpose' }
-        #{ set_input 'hex_color',       'radio', 'purpose' }
+        #{ set_input 'general',           'radio', 'purpose' }
+        #{ set_input 'four_digits_pin',   'radio', 'purpose' }
+        #{ set_input 'three_dices',       'radio', 'purpose' }
+        #{ set_input 'hex_color',         'radio', 'purpose' }
 
         #{ set_input 'custom' }
         #{ set_input 'digits',            'checkbox' }
@@ -38,11 +38,22 @@ jQuery ($) ->
         expect(strategy.execute().length).toEqual(12)
 
     describe '#set', ->
-      it 'must format the value and set the type_safe accordingly', ->
+      it 'must format the value and set the type_safe as true', ->
         strategy = new PasswordWizardStrategy()
+        strategy.set 'type_safe', 't'
+        expect(strategy.type_safe).toBeTruthy()
         strategy.set 'type_safe', 'true'
         expect(strategy.type_safe).toBeTruthy()
+        strategy.set 'type_safe', 'TRUE'
+        expect(strategy.type_safe).toBeTruthy()
+
+      it 'must format the value and set the type_safe as true', ->
+        strategy = new PasswordWizardStrategy()
+        strategy.set 'type_safe', 'f'
+        expect(strategy.type_safe).toBeFalsy()
         strategy.set 'type_safe', 'false'
+        expect(strategy.type_safe).toBeFalsy()
+        strategy.set 'type_safe', 'FALSE'
         expect(strategy.type_safe).toBeFalsy()
         strategy.set 'type_safe', ''
         expect(strategy.type_safe).toBeFalsy()
@@ -57,16 +68,21 @@ jQuery ($) ->
 
       it 'must assign the candidates correctly', ->
         strategy = new PasswordWizardStrategy()
+        strategy.set 'candidates', undefined
+        expect(strategy.candidates).toBeUndefined()
+        strategy.set 'candidates', ''
+        expect(strategy.candidates).toEqual('')
         strategy.set 'candidates', 'abc1234'
         expect(strategy.candidates).toEqual('abc1234')
 
     describe '#eq', ->
-      it 'must return true if all properties equal', ->
+      it 'must return true if all properties equal when they are instances of the same class', ->
         strategy = new PasswordWizardStrategy()
         strategy2 = new PasswordWizardStrategy()
 
         expect(strategy.eq(strategy2)).toBeTruthy()
 
+      it 'must return true if all properties equal when they are instances of the different class', ->
         strategy = new PasswordWizardStrategy()
         strategy.candidates = PasswordWizard.DIGITS
         strategy.digits_checker_length = 4
@@ -96,7 +112,7 @@ jQuery ($) ->
           strategy2.set property[0], property[1]
           expect(strategy.eq(strategy2)).toBeFalsy()
 
-      it 'must return true even if the samples are not the same', ->
+      it 'must return true when samples are not the same, even if the samples are not the same', ->
         strategy = new PasswordWizardStrategy()
         strategy2 = new PasswordWizardStrategy()
         strategy2.samples = 11
@@ -113,10 +129,11 @@ jQuery ($) ->
     describe '::include', ->
       it 'must return true when string1 contains all chars from string2', ->
         expect(PasswordWizardManager.include('abc1234', 'cb1')).toBeTruthy()
-        expect(PasswordWizardManager.include('abc1234', 'abc1234')).toBeTruthy()
+        expect(PasswordWizardManager.include('abc1234', '1234abc')).toBeTruthy()
 
       it 'must return false when string1 does not contain all chars from string2', ->
         expect(PasswordWizardManager.include('abc1234', '5abc1234')).toBeFalsy()
+        expect(PasswordWizardManager.include('abc1234', '5')).toBeFalsy()
 
     describe '::exclude', ->
       it 'must return true when string1 does not contain any chars from string2', ->
@@ -169,4 +186,30 @@ jQuery ($) ->
         expect($('input[name=purpose]:checked').is('#four_digits_pin')).toBeTruthy()
 
     describe '::update', ->
-    
+      it 'must update the property accordingly', ->
+        set_fixtures()
+
+        PasswordWizardManager.init()
+        PasswordWizardManager.update('candidates', '1234')
+
+        expect(PasswordWizardManager.strategy().candidates).toEqual('1234')
+
+    describe '::remove_candidates', ->
+      it 'must remove the candidates', ->
+        set_fixtures()
+
+        PasswordWizardManager.init()
+        PasswordWizardManager.update('candidates', '')
+        PasswordWizardManager.remove_candidates(PasswordWizard.DIGITS)
+
+        expect(PasswordWizardManager.strategy().candidates).toEqual('')
+
+    describe '::add_candidates', ->
+      it 'must remove the candidates', ->
+        set_fixtures()
+
+        PasswordWizardManager.init()
+        PasswordWizardManager.update('candidates', '')
+        PasswordWizardManager.add_candidates(PasswordWizard.DIGITS)
+
+        expect(PasswordWizardManager.strategy().candidates).toEqual(PasswordWizard.DIGITS)

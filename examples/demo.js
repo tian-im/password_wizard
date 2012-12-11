@@ -16,31 +16,10 @@
         this.samples = 10;
       }
 
-      PasswordWizardStrategy.prototype.execute = function() {
-        var len, pw, _i, _ref, _results;
-        pw = new PasswordWizard();
-        pw.length(this.length);
-        pw.candidates = this.candidates;
-        if (this.digits_checker_length != null) {
-          pw.add_rule(DigitsFrequencyChecker, this.digits_checker_length);
-        }
-        if (this.letters_checker_length != null) {
-          pw.add_rule(AlphabetsFrequencyChecker, this.letters_checker_length);
-        }
-        if (this.symbols_checker_length != null) {
-          pw.add_rule(SymbolsFrequencyChecker, this.symbols_checker_length);
-        }
-        _results = [];
-        for (len = _i = 1, _ref = this.samples; 1 <= _ref ? _i <= _ref : _i >= _ref; len = 1 <= _ref ? ++_i : --_i) {
-          _results.push(pw.generate());
-        }
-        return _results;
-      };
-
       PasswordWizardStrategy.prototype.set = function(property, value) {
         switch (property) {
           case 'type_safe':
-            value = value === 'true';
+            value = value.match(/true|t/i) != null;
             break;
           case 'digits_checker_length':
           case 'letters_checker_length':
@@ -71,6 +50,27 @@
           }
         }
         return true;
+      };
+
+      PasswordWizardStrategy.prototype.execute = function() {
+        var len, pw, _i, _ref, _results;
+        pw = new PasswordWizard();
+        pw.length(this.length);
+        pw.candidates = this.candidates;
+        if (this.digits_checker_length != null) {
+          pw.add_rule(DigitsFrequencyChecker, this.digits_checker_length);
+        }
+        if (this.letters_checker_length != null) {
+          pw.add_rule(AlphabetsFrequencyChecker, this.letters_checker_length);
+        }
+        if (this.symbols_checker_length != null) {
+          pw.add_rule(SymbolsFrequencyChecker, this.symbols_checker_length);
+        }
+        _results = [];
+        for (len = _i = 1, _ref = this.samples; 1 <= _ref ? _i <= _ref : _i >= _ref; len = 1 <= _ref ? ++_i : --_i) {
+          _results.push(pw.generate());
+        }
+        return _results;
       };
 
       return PasswordWizardStrategy;
@@ -164,11 +164,12 @@
         _ref = ['#four_digits_pin', '#three_dices', '#hex_color'];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           item = _ref[_i];
-          if (strategy.eq(($item = $(item)).data('strategy'))) {
-            return $item.prop('checked', true).data('strategy');
+          $item = $(item);
+          if (strategy.eq($item.data('strategy'))) {
+            return $item.prop('checked', true);
           }
         }
-        return $('#general').prop('checked', true).data('strategy', strategy);
+        return $('#general').prop('checked', true);
       };
 
       PasswordWizardManager.update = function(property, value) {
@@ -179,27 +180,23 @@
       };
 
       PasswordWizardManager.strategy = function() {
-        var strategy;
-        strategy = $('input[name=purpose]:checked').data('strategy');
-        return strategy != null ? strategy : strategy = $('#general').data('strategy');
+        return $('#general').data('strategy');
       };
 
       PasswordWizardManager.remove_candidates = function(str) {
-        var strategy;
-        strategy = this.strategy();
-        strategy.candidates = strategy.candidates.replace(new RegExp("[" + str + "]", 'g'), '');
-        return this.reload(strategy);
+        var candidates;
+        candidates = $('#custom').val().replace(new RegExp("[" + str + "]", 'g'), '');
+        return this.update('candidates', candidates);
       };
 
       PasswordWizardManager.add_candidates = function(str) {
-        var strategy;
-        strategy = this.strategy();
-        strategy.candidates = str + strategy.candidates.replace(new RegExp("[" + str + "]", 'g'), '');
-        return this.reload(strategy);
+        var candidates;
+        candidates = str + $('#custom').val().replace(new RegExp("[" + str + "]", 'g'), '');
+        return this.update('candidates', candidates);
       };
 
       PasswordWizardManager.init = function() {
-        var pairs, self, _i, _len, _ref;
+        var self;
         self = this;
         $('#custom').change(function() {
           return self.update('candidates', $(this).val());
@@ -219,24 +216,53 @@
         $('#symbols_checker_length').change(function() {
           return self.update('symbols_checker_length', $(this).val());
         });
-        _ref = [['#digits', PasswordWizard.DIGITS], ['#letters', PasswordWizard.DOWNCASE_ALPHABETS], ['#uppercase_letters', PasswordWizard.UPCASE_ALPHABETS], ['#symbols', PasswordWizard.SYMBOLS]];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          pairs = _ref[_i];
-          $(pairs[0]).change(function() {
-            if ($(this).is(':checked')) {
-              return self.add_candidates(pairs[1]);
-            } else {
-              return self.remove_candidates(pairs[1]);
-            }
-          });
-        }
+        $('#digits').change(function() {
+          if ($(this).is(':checked')) {
+            return self.add_candidates(PasswordWizard.DIGITS);
+          } else {
+            return self.remove_candidates(PasswordWizard.DIGITS);
+          }
+        });
+        $('#letters').change(function() {
+          if ($(this).is(':checked')) {
+            return self.add_candidates(PasswordWizard.DOWNCASE_ALPHABETS);
+          } else {
+            return self.remove_candidates(PasswordWizard.DOWNCASE_ALPHABETS);
+          }
+        });
+        $('#uppercase_letters').change(function() {
+          if ($(this).is(':checked')) {
+            return self.add_candidates(PasswordWizard.UPCASE_ALPHABETS);
+          } else {
+            return self.remove_candidates(PasswordWizard.UPCASE_ALPHABETS);
+          }
+        });
+        $('#symbols').change(function() {
+          var candidates;
+          if ($(this).is(':checked')) {
+            return self.add_candidates(PasswordWizard.SYMBOLS);
+          } else {
+            candidates = PasswordWizard.SYMBOLS.replace(/([\.\[\]\\\(\)\?\$\^\+\*])/g, '\\$1');
+            return self.remove_candidates(candidates);
+          }
+        });
+        $('#type_safe').change(function() {
+          var candidates;
+          if ($(this).is(':checked')) {
+            candidates = PasswordWizard.TYPE_SAFES.replace(/([\.\[\]\\\(\)\?\$\^\+\*])/g, '\\$1');
+            return self.remove_candidates(candidates);
+          }
+        });
         $('#four_digits_pin').data('strategy', new FourDigitsPINStrategy());
         $('#three_dices').data('strategy', new ThreeDicesStrategy());
         $('#hex_color').data('strategy', new HEXColorStrategy());
-        $('#general').change(function() {
+        $('#four_digits_pin, #three_dices, #hex_color').click(function() {
+          return $('#general').data('strategy', $.extend({}, $(this).data('strategy')));
+        });
+        $('#general').click(function() {
           return $(this).data('strategy', new PasswordWizardStrategy());
         });
-        $('input[name=purpose]').change(function() {
+        $('input[name=purpose]').click(function() {
           return self.reload();
         });
         $('button.btn').click(function() {

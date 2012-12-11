@@ -27,12 +27,24 @@
       });
       describe('#set', function() {
         var property, _i, _len, _ref;
-        it('must format the value and set the type_safe accordingly', function() {
+        it('must format the value and set the type_safe as true', function() {
           var strategy;
           strategy = new PasswordWizardStrategy();
+          strategy.set('type_safe', 't');
+          expect(strategy.type_safe).toBeTruthy();
           strategy.set('type_safe', 'true');
           expect(strategy.type_safe).toBeTruthy();
+          strategy.set('type_safe', 'TRUE');
+          return expect(strategy.type_safe).toBeTruthy();
+        });
+        it('must format the value and set the type_safe as true', function() {
+          var strategy;
+          strategy = new PasswordWizardStrategy();
+          strategy.set('type_safe', 'f');
+          expect(strategy.type_safe).toBeFalsy();
           strategy.set('type_safe', 'false');
+          expect(strategy.type_safe).toBeFalsy();
+          strategy.set('type_safe', 'FALSE');
           expect(strategy.type_safe).toBeFalsy();
           strategy.set('type_safe', '');
           return expect(strategy.type_safe).toBeFalsy();
@@ -52,16 +64,23 @@
         return it('must assign the candidates correctly', function() {
           var strategy;
           strategy = new PasswordWizardStrategy();
+          strategy.set('candidates', void 0);
+          expect(strategy.candidates).toBeUndefined();
+          strategy.set('candidates', '');
+          expect(strategy.candidates).toEqual('');
           strategy.set('candidates', 'abc1234');
           return expect(strategy.candidates).toEqual('abc1234');
         });
       });
       describe('#eq', function() {
-        it('must return true if all properties equal', function() {
+        it('must return true if all properties equal when they are instances of the same class', function() {
           var strategy, strategy2;
           strategy = new PasswordWizardStrategy();
           strategy2 = new PasswordWizardStrategy();
-          expect(strategy.eq(strategy2)).toBeTruthy();
+          return expect(strategy.eq(strategy2)).toBeTruthy();
+        });
+        it('must return true if all properties equal when they are instances of the different class', function() {
+          var strategy, strategy2;
           strategy = new PasswordWizardStrategy();
           strategy.candidates = PasswordWizard.DIGITS;
           strategy.digits_checker_length = 4;
@@ -88,7 +107,7 @@
           }
           return _results;
         });
-        return it('must return true even if the samples are not the same', function() {
+        return it('must return true when samples are not the same, even if the samples are not the same', function() {
           var strategy, strategy2;
           strategy = new PasswordWizardStrategy();
           strategy2 = new PasswordWizardStrategy();
@@ -109,10 +128,11 @@
       describe('::include', function() {
         it('must return true when string1 contains all chars from string2', function() {
           expect(PasswordWizardManager.include('abc1234', 'cb1')).toBeTruthy();
-          return expect(PasswordWizardManager.include('abc1234', 'abc1234')).toBeTruthy();
+          return expect(PasswordWizardManager.include('abc1234', '1234abc')).toBeTruthy();
         });
         return it('must return false when string1 does not contain all chars from string2', function() {
-          return expect(PasswordWizardManager.include('abc1234', '5abc1234')).toBeFalsy();
+          expect(PasswordWizardManager.include('abc1234', '5abc1234')).toBeFalsy();
+          return expect(PasswordWizardManager.include('abc1234', '5')).toBeFalsy();
         });
       });
       describe('::exclude', function() {
@@ -160,7 +180,32 @@
           return expect($('input[name=purpose]:checked').is('#four_digits_pin')).toBeTruthy();
         });
       });
-      return describe('::update', function() {});
+      describe('::update', function() {
+        return it('must update the property accordingly', function() {
+          set_fixtures();
+          PasswordWizardManager.init();
+          PasswordWizardManager.update('candidates', '1234');
+          return expect(PasswordWizardManager.strategy().candidates).toEqual('1234');
+        });
+      });
+      describe('::remove_candidates', function() {
+        return it('must remove the candidates', function() {
+          set_fixtures();
+          PasswordWizardManager.init();
+          PasswordWizardManager.update('candidates', '');
+          PasswordWizardManager.remove_candidates(PasswordWizard.DIGITS);
+          return expect(PasswordWizardManager.strategy().candidates).toEqual('');
+        });
+      });
+      return describe('::add_candidates', function() {
+        return it('must remove the candidates', function() {
+          set_fixtures();
+          PasswordWizardManager.init();
+          PasswordWizardManager.update('candidates', '');
+          PasswordWizardManager.add_candidates(PasswordWizard.DIGITS);
+          return expect(PasswordWizardManager.strategy().candidates).toEqual(PasswordWizard.DIGITS);
+        });
+      });
     });
   });
 
